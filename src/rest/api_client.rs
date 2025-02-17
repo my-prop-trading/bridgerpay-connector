@@ -43,18 +43,14 @@ impl<C: RestApiConfig> RestApiClient<C> {
             user_name: self.config.get_user_name().await,
             password: self.config.get_password().await,
         };
-        let resp: LoginResponse = self
+        let resp: LoginModel = self
             .send_deserialized(endpoint, Some(&request), None)
             .await?;
 
-        if resp.response.status != "OK" {
-            return Err(format!("Failed login {:?}", resp.response).into());
-        }
-
         let mut access_token = self.login_result.lock().unwrap();
-        access_token.replace(resp.result.clone());
+        access_token.replace(resp.clone());
 
-        Ok(resp.result)
+        Ok(resp)
     }
 
     pub async fn is_logged_in(&self) -> Result<bool, Error> {
