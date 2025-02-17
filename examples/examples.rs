@@ -18,7 +18,12 @@ async fn main() {
 }
 
 pub async fn login(rest_client: &RestApiClient<ExampleApiConfig>) {
-    let resp = rest_client.login(&LoginRequest {}).await;
+    let resp = rest_client
+        .login(&LoginRequest {
+            user_name: std::env::var("USER_NAME").unwrap(),
+            password: std::env::var("PASSWORD").unwrap(),
+        })
+        .await;
 
     println!("{:?}", resp)
 }
