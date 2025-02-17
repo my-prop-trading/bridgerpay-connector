@@ -47,6 +47,51 @@ pub struct CreateCashierSessionRequest {
     pub currency: String,
     /// The transaction will be created in the country specified, following ISO 3166-1 - Country Codes (e.g., "US," "CN," or "BE").
     pub country: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub theme: Option<CheckoutTheme>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub first_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub phone: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub email: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zip_code: Option<String>,
+    /// his parameter serves as an supplementary security measure. It will be subsequently returned
+    /// as an integral component of the transaction notification process.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payload: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub currency_lock: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub amount_lock: Option<bool>,
+    /// The platform ID refers to the unique ID from the merchant's CRM.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub platform_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub tracking_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub affiliate_id: Option<String>,
+}
+
+#[derive(strum::Display, Debug, Clone, Serialize, Deserialize)]
+pub enum CheckoutTheme {
+    #[strum(to_string = "dark")]
+    #[serde(rename = "dark")]
+    Dark,
+    #[strum(to_string = "light")]
+    #[serde(rename = "light")]
+    Light,
+    #[strum(to_string = "bright")]
+    #[serde(rename = "bright")]
+    Bright,
+    #[strum(to_string = "transparent")]
+    #[serde(rename = "transparent")]
+    Transparent,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
