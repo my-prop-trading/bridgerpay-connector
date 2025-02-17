@@ -2,7 +2,7 @@ use crate::rest::endpoints::RestApiEndpoint;
 use crate::rest::errors::Error;
 use crate::rest::{
     CashierSessionModel, CreateCashierSessionRequest, LoginModel,
-    LoginRequest, LoginResponse, Response,
+    LoginRequest, Response,
 };
 use error_chain::bail;
 use flurl::{FlUrl, FlUrlResponse};
