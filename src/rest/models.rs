@@ -33,7 +33,14 @@ pub struct ResponseModel {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateCashierSessionRequest {
-    pub api_key: String,
+    /// The Cashier key refers to software-level credentials utilized for the purpose of identifying a merchant.
+    pub cashier_key: String,
+    /// The Order ID denotes the unique transaction identifier within the merchant's system.
+    pub order_id: String,
+    /// The currency of the payment transaction will be initiated is determined by adhering to ISO 4217 - Currency Codes (e.g., "USD," "CNY," or "EUR").
+    pub currency: String,
+    /// The transaction will be created in the country specified, following ISO 3166-1 - Country Codes (e.g., "US," "CN," or "BE").
+    pub country: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,7 +1,8 @@
 use bridgerpay_connector::rest::api_client::{RestApiClient, RestApiConfig};
-use bridgerpay_connector::rest::LoginRequest;
+use bridgerpay_connector::rest::{CreateCashierSessionRequest, LoginRequest};
 use std::time::Duration;
 use tokio::time::Instant;
+use uuid::Uuid;
 
 #[tokio::main]
 async fn main() {
@@ -13,6 +14,7 @@ async fn main() {
     let brand_api = RestApiClient::new(config);
     let instant = Instant::now();
     login(&brand_api).await;
+    create_cashier_session(&brand_api).await;
 
     println!("elapsed time: {:?}", instant.elapsed());
 }
@@ -22,6 +24,19 @@ pub async fn login(rest_client: &RestApiClient<ExampleApiConfig>) {
         .login(&LoginRequest {
             user_name: std::env::var("USER_NAME").unwrap(),
             password: std::env::var("PASSWORD").unwrap(),
+        })
+        .await;
+
+    println!("{:?}", resp)
+}
+
+pub async fn create_cashier_session(rest_client: &RestApiClient<ExampleApiConfig>) {
+    let resp = rest_client
+        .create_cashier_session(&CreateCashierSessionRequest {
+            cashier_key: std::env::var("CASHIER_KEY").unwrap(),
+            order_id: Uuid::new_v4().to_string(),
+            currency: "USD".to_string(),
+            country: "US".to_string(),
         })
         .await;
 

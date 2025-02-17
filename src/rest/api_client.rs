@@ -1,8 +1,8 @@
 use crate::rest::endpoints::RestApiEndpoint;
 use crate::rest::errors::Error;
 use crate::rest::{
-    AccessTokenModel, CreateCashierSessionRequest, CreateCashierSessionResponse, LoginRequest,
-    LoginResponse, LoginResultModel,
+    CreateCashierSessionRequest, CreateCashierSessionResponse, LoginRequest, LoginResponse,
+    LoginResultModel,
 };
 use error_chain::bail;
 use flurl::{FlUrl, FlUrlResponse};
@@ -48,30 +48,33 @@ impl<C: RestApiConfig> RestApiClient<C> {
         Ok(resp)
     }
 
-    pub async fn create_cashier_session(&self) -> Result<CreateCashierSessionResponse, Error> {
+    pub async fn create_cashier_session(
+        &self,
+        request: &CreateCashierSessionRequest,
+    ) -> Result<CreateCashierSessionResponse, Error> {
         let endpoint = RestApiEndpoint::CashierCreateSession;
-        let request = CreateCashierSessionRequest {
-            api_key: self.config.get_api_key().await,
-        };
-        self.send_deserialized(endpoint, Some(&request), None).await
+
+        self.send_deserialized(
+            endpoint,
+            Some(&request),
+            Some(&self.config.get_api_key().await),
+        )
+        .await
     }
 
     async fn send<R: Serialize + Debug>(
         &self,
         endpoint: RestApiEndpoint,
         request: Option<&R>,
-        idempotency_key: Option<&str>,
+        path_params: Option<&str>,
     ) -> Result<String, Error> {
         if std::env::var("DEBUG").is_ok() {
             println!("execute send: {:?} {:?}", endpoint, request);
         }
 
         let timeout = self.config.get_timeout().await;
-        let response = tokio::time::timeout(
-            timeout,
-            self.send_flurl(&endpoint, request, idempotency_key),
-        )
-        .await;
+        let response =
+            tokio::time::timeout(timeout, self.send_flurl(&endpoint, request, path_params)).await;
 
         let Ok(response) = response else {
             let msg = format!(
@@ -89,7 +92,7 @@ impl<C: RestApiConfig> RestApiClient<C> {
         &self,
         endpoint: RestApiEndpoint,
         request: Option<&R>,
-        idempotency_key: Option<&str>,
+        path_params: Option<&str>,
     ) -> Result<T, Error> {
         if std::env::var("DEBUG").is_ok() {
             println!("execute send_deserialized: {:?} {:?}", endpoint, request);
@@ -98,7 +101,7 @@ impl<C: RestApiConfig> RestApiClient<C> {
         let timeout = self.config.get_timeout().await;
         let response = tokio::time::timeout(
             timeout,
-            self.send_flurl_deserialized(&endpoint, request, idempotency_key),
+            self.send_flurl_deserialized(&endpoint, request, path_params),
         )
         .await;
 
@@ -133,9 +136,9 @@ impl<C: RestApiConfig> RestApiClient<C> {
         &self,
         endpoint: &RestApiEndpoint,
         request: Option<&R>,
-        idempotency_key: Option<&str>,
+        path_params: Option<&str>,
     ) -> Result<T, Error> {
-        let response = self.send_flurl(endpoint, request, idempotency_key).await?;
+        let response = self.send_flurl(endpoint, request, path_params).await?;
         let result: Result<T, _> = serde_json::from_str(&response);
 
         let Ok(body) = result else {
@@ -156,7 +159,7 @@ impl<C: RestApiConfig> RestApiClient<C> {
         &self,
         endpoint: &RestApiEndpoint,
         request: Option<&R>,
-        idempotency_key: Option<&str>,
+        path_params: Option<&str>,
     ) -> Result<String, Error> {
         let mut request_json = None;
 
@@ -170,7 +173,7 @@ impl<C: RestApiConfig> RestApiClient<C> {
         } else {
             None
         };
-        let (flurl, url) = self.build_flurl(endpoint, request, idempotency_key).await?;
+        let (flurl, url) = self.build_flurl(endpoint, request, path_params).await?;
         let http_method = endpoint.get_http_method();
 
         let result = if http_method == Method::GET {
@@ -204,24 +207,28 @@ impl<C: RestApiConfig> RestApiClient<C> {
         &self,
         endpoint: &RestApiEndpoint,
         request: Option<&R>,
-        idempotency_key: Option<&str>,
+        path_params: Option<&str>,
     ) -> Result<(FlUrl, String), Error> {
         let base_url = self.config.get_api_url().await;
         let http_method = endpoint.get_http_method();
 
-        let url = if http_method == Method::GET {
+        let mut url = if http_method == Method::GET {
             let query_string = serde_qs::to_string(&request).expect("must be valid model");
             self.build_full_url(&base_url, endpoint, Some(query_string))
         } else {
             self.build_full_url(&base_url, endpoint, None)
         };
 
-        let flurl = self.add_headers(FlUrl::new(&url), idempotency_key).await;
+        if let Some(path_params) = path_params {
+            url = format!("{url}/{path_params}");
+        }
+
+        let flurl = self.add_headers(FlUrl::new(&url)).await;
 
         Ok((flurl, url))
     }
 
-    async fn add_headers(&self, flurl: FlUrl, _idempotency_key: Option<&str>) -> FlUrl {
+    async fn add_headers(&self, flurl: FlUrl) -> FlUrl {
         let json_content_str = "application/json";
 
         let mut flurl = flurl
