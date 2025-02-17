@@ -1,6 +1,9 @@
 use crate::rest::endpoints::RestApiEndpoint;
 use crate::rest::errors::Error;
-use crate::rest::{LoginRequest, LoginResponse};
+use crate::rest::{
+    AccessTokenModel, CreateCashierSessionRequest, CreateCashierSessionResponse, LoginRequest,
+    LoginResponse, LoginResultModel,
+};
 use error_chain::bail;
 use flurl::{FlUrl, FlUrlResponse};
 use http::{Method, StatusCode};
@@ -18,16 +21,39 @@ pub trait RestApiConfig {
 
 pub struct RestApiClient<C: RestApiConfig> {
     config: C,
+    login_result: std::sync::Mutex<Option<LoginResultModel>>,
 }
 
 impl<C: RestApiConfig> RestApiClient<C> {
     pub fn new(config: C) -> Self {
-        Self { config }
+        Self {
+            config,
+            login_result: Default::default(),
+        }
     }
 
     pub async fn login(&self, request: &LoginRequest) -> Result<LoginResponse, Error> {
-        let endpoint = RestApiEndpoint::Login;
-        self.send_deserialized(endpoint, Some(request), None).await
+        let endpoint = RestApiEndpoint::AuthLogin;
+        let resp: LoginResponse = self
+            .send_deserialized(endpoint, Some(request), None)
+            .await?;
+
+        if resp.response.status != "OK" {
+            return Err(format!("Failed to login {:?}", resp.response).into());
+        }
+
+        let mut access_token = self.login_result.lock().unwrap();
+        access_token.replace(resp.result.clone());
+
+        Ok(resp)
+    }
+
+    pub async fn create_cashier_session(&self) -> Result<CreateCashierSessionResponse, Error> {
+        let endpoint = RestApiEndpoint::CashierCreateSession;
+        let request = CreateCashierSessionRequest {
+            api_key: self.config.get_api_key().await,
+        };
+        self.send_deserialized(endpoint, Some(&request), None).await
     }
 
     async fn send<R: Serialize + Debug>(
@@ -195,16 +221,22 @@ impl<C: RestApiConfig> RestApiClient<C> {
         Ok((flurl, url))
     }
 
-    async fn add_headers(&self, flurl: FlUrl, idempotency_key: Option<&str>) -> FlUrl {
+    async fn add_headers(&self, flurl: FlUrl, _idempotency_key: Option<&str>) -> FlUrl {
         let json_content_str = "application/json";
 
         let mut flurl = flurl
             .with_header("Content-Type", json_content_str)
             .with_header("Accept", json_content_str)
-            .with_header("rest-api-key", self.config.get_api_key().await);
+            .with_header(
+                "Host",
+                self.config.get_api_url().await.replace("https://", ""),
+            );
 
-        if let Some(idempotency_key) = idempotency_key {
-            flurl = flurl.with_header("Idempotency-Key", idempotency_key);
+        if let Some(result) = self.login_result.lock().unwrap().as_ref() {
+            flurl = flurl.with_header(
+                "Authorization",
+                format!("Bearer {}", result.access_token.token),
+            );
         }
 
         flurl

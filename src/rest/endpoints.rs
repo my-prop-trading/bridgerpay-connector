@@ -2,17 +2,18 @@ use http::Method;
 
 #[derive(Clone, Copy, Debug)]
 pub enum RestApiEndpoint {
-    Login,
+    AuthLogin,
+    CashierCreateSession,
 }
 
 impl From<&RestApiEndpoint> for String {
     fn from(item: &RestApiEndpoint) -> Self {
         let api_version = "v2";
-        let api_name = "rest-api";
 
         match item {
-            RestApiEndpoint::Login => {
-                format!("/{api_version}/auth/login", )
+            RestApiEndpoint::AuthLogin => format!("/{api_version}/auth/login"),
+            RestApiEndpoint::CashierCreateSession => {
+                format!("/{api_version}/cashier/session/create")
             }
         }
     }
@@ -21,7 +22,8 @@ impl From<&RestApiEndpoint> for String {
 impl RestApiEndpoint {
     pub fn get_http_method(&self) -> Method {
         match &self {
-            RestApiEndpoint::Login => Method::POST,
+            RestApiEndpoint::AuthLogin => Method::POST,
+            RestApiEndpoint::CashierCreateSession => Method::POST,
         }
     }
 }

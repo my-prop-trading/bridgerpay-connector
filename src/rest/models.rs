@@ -30,3 +30,19 @@ pub struct ResponseModel {
     pub code: i32,
     pub message: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateCashierSessionRequest {
+    pub api_key: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateCashierSessionResponse {
+    pub response: ResponseModel,
+    pub result: CreateCashierSessionResultModel,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CreateCashierSessionResultModel {
+    pub cashier_token: String,
+}
