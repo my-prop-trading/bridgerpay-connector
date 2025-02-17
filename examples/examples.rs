@@ -1,16 +1,12 @@
 use bridgerpay_connector::rest::api_client::{RestApiClient, RestApiConfig};
-use bridgerpay_connector::rest::{CreateCashierSessionRequest, LoginRequest};
+use bridgerpay_connector::rest::{CreateCashierSessionRequest};
 use std::time::Duration;
 use tokio::time::Instant;
 use uuid::Uuid;
 
 #[tokio::main]
 async fn main() {
-    let api_key = std::env::var("API_KEY").unwrap();
-    let config = ExampleApiConfig {
-        api_url: "https://api.bridgerpay.com".to_string(),
-        api_key,
-    };
+    let config = ExampleApiConfig;
     let brand_api = RestApiClient::new(config);
     let instant = Instant::now();
     login(&brand_api).await;
@@ -20,20 +16,15 @@ async fn main() {
 }
 
 pub async fn login(rest_client: &RestApiClient<ExampleApiConfig>) {
-    let resp = rest_client
-        .login(&LoginRequest {
-            user_name: std::env::var("USER_NAME").unwrap(),
-            password: std::env::var("PASSWORD").unwrap(),
-        })
-        .await;
+    let resp = rest_client.login().await;
 
     println!("{:?}", resp)
 }
 
 pub async fn create_cashier_session(rest_client: &RestApiClient<ExampleApiConfig>) {
     let resp = rest_client
-        .create_cashier_session(&CreateCashierSessionRequest {
-            cashier_key: std::env::var("CASHIER_KEY").unwrap(),
+        .create_cashier_session(CreateCashierSessionRequest {
+            cashier_key: None,
             order_id: Uuid::new_v4().to_string(),
             currency: "USD".to_string(),
             country: "US".to_string(),
@@ -43,22 +34,31 @@ pub async fn create_cashier_session(rest_client: &RestApiClient<ExampleApiConfig
     println!("{:?}", resp)
 }
 
-pub struct ExampleApiConfig {
-    pub api_url: String,
-    pub api_key: String,
-}
+pub struct ExampleApiConfig;
 
 #[async_trait::async_trait]
 impl RestApiConfig for ExampleApiConfig {
     async fn get_api_url(&self) -> String {
-        self.api_url.clone()
+        "https://api.bridgerpay.com".to_string()
     }
 
     async fn get_api_key(&self) -> String {
-        self.api_key.clone()
+        std::env::var("API_KEY").unwrap()
     }
 
     async fn get_timeout(&self) -> Duration {
         Duration::from_secs(15)
+    }
+
+    async fn get_user_name(&self) -> String {
+        std::env::var("USER_NAME").unwrap()
+    }
+
+    async fn get_password(&self) -> String {
+        std::env::var("PASSWORD").unwrap()
+    }
+
+    async fn get_cashier_key(&self) -> String {
+        std::env::var("CASHIER_KEY").unwrap()
     }
 }

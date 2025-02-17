@@ -1,8 +1,8 @@
 use crate::rest::endpoints::RestApiEndpoint;
 use crate::rest::errors::Error;
 use crate::rest::{
-    CreateCashierSessionRequest, CreateCashierSessionResponse, LoginRequest, LoginResponse,
-    LoginResultModel,
+    CashierSessionModel, CreateCashierSessionRequest, LoginModel,
+    LoginRequest, LoginResponse, Response,
 };
 use error_chain::bail;
 use flurl::{FlUrl, FlUrlResponse};
@@ -12,16 +12,21 @@ use serde::Serialize;
 use std::fmt::Debug;
 use std::time::Duration;
 
+const CHECKOUT_WIDGET_TEMPLATE: &str = "<html><body><script src='https://checkout.bridgerpay.com/v2/launcher' data-cashier-key='{{cashier_key}}' data-cashier-token='{{cashier_token}}'></script></body></html>";
+
 #[async_trait::async_trait]
 pub trait RestApiConfig {
     async fn get_api_url(&self) -> String;
     async fn get_api_key(&self) -> String;
     async fn get_timeout(&self) -> Duration;
+    async fn get_user_name(&self) -> String;
+    async fn get_password(&self) -> String;
+    async fn get_cashier_key(&self) -> String;
 }
 
 pub struct RestApiClient<C: RestApiConfig> {
-    config: C,
-    login_result: std::sync::Mutex<Option<LoginResultModel>>,
+    pub config: C,
+    login_result: std::sync::Mutex<Option<LoginModel>>,
 }
 
 impl<C: RestApiConfig> RestApiClient<C> {
@@ -32,37 +37,70 @@ impl<C: RestApiConfig> RestApiClient<C> {
         }
     }
 
-    pub async fn login(&self, request: &LoginRequest) -> Result<LoginResponse, Error> {
+    pub async fn login(&self) -> Result<LoginModel, Error> {
         let endpoint = RestApiEndpoint::AuthLogin;
+        let request = LoginRequest {
+            user_name: self.config.get_user_name().await,
+            password: self.config.get_password().await,
+        };
         let resp: LoginResponse = self
-            .send_deserialized(endpoint, Some(request), None)
+            .send_deserialized(endpoint, Some(&request), None)
             .await?;
 
         if resp.response.status != "OK" {
-            return Err(format!("Failed to login {:?}", resp.response).into());
+            return Err(format!("Failed login {:?}", resp.response).into());
         }
 
         let mut access_token = self.login_result.lock().unwrap();
         access_token.replace(resp.result.clone());
 
-        Ok(resp)
+        Ok(resp.result)
+    }
+
+    pub async fn is_logged_in(&self) -> Result<bool, Error> {
+        Ok(self.login_result.lock().unwrap().is_some())
     }
 
     pub async fn create_cashier_session(
         &self,
-        request: &CreateCashierSessionRequest,
-    ) -> Result<CreateCashierSessionResponse, Error> {
-        let endpoint = RestApiEndpoint::CashierCreateSession;
+        request: CreateCashierSessionRequest,
+    ) -> Result<CashierSessionModel, Error> {
+        let endpoint = RestApiEndpoint::CreateCashierSession;
+        let mut request = request;
 
-        self.send_deserialized(
-            endpoint,
-            Some(&request),
-            Some(&self.config.get_api_key().await),
-        )
-        .await
+        if request.cashier_key.is_none() {
+            request.cashier_key = Some(self.config.get_cashier_key().await);
+        }
+
+        let resp: CashierSessionModel = self
+            .send_deserialized(
+                endpoint,
+                Some(&request),
+                Some(&self.config.get_api_key().await),
+            )
+            .await?;
+
+        Ok(resp)
     }
 
-    async fn send<R: Serialize + Debug>(
+    pub async fn generate_checkout_widget(
+        &self,
+        request: CreateCashierSessionRequest,
+    ) -> Result<String, String> {
+        let _ = self.login().await.map_err(|e| e.to_string())?;
+        let session = self
+            .create_cashier_session(request)
+            .await
+            .map_err(|e| e.to_string())?;
+
+        let html = CHECKOUT_WIDGET_TEMPLATE
+            .replace("{{cashier_key}}", &self.config.get_cashier_key().await)
+            .replace("{{cashier_token}}", &session.cashier_token);
+
+        Ok(html)
+    }
+
+    async fn _send<R: Serialize + Debug>(
         &self,
         endpoint: RestApiEndpoint,
         request: Option<&R>,
@@ -139,7 +177,7 @@ impl<C: RestApiConfig> RestApiClient<C> {
         path_params: Option<&str>,
     ) -> Result<T, Error> {
         let response = self.send_flurl(endpoint, request, path_params).await?;
-        let result: Result<T, _> = serde_json::from_str(&response);
+        let result: Result<Response<T>, _> = serde_json::from_str(&response);
 
         let Ok(body) = result else {
             let msg = format!(
@@ -152,7 +190,11 @@ impl<C: RestApiConfig> RestApiClient<C> {
             return Err(msg.into());
         };
 
-        Ok(body)
+        if body.response.status != "OK" {
+            return Err(format!("Failed {:?} {:?}", endpoint, body.response).into());
+        }
+
+        Ok(body.result.unwrap())
     }
 
     async fn send_flurl<R: Serialize + Debug>(

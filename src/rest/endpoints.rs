@@ -3,7 +3,7 @@ use http::Method;
 #[derive(Clone, Copy, Debug)]
 pub enum RestApiEndpoint {
     AuthLogin,
-    CashierCreateSession,
+    CreateCashierSession,
 }
 
 impl From<&RestApiEndpoint> for String {
@@ -12,7 +12,7 @@ impl From<&RestApiEndpoint> for String {
 
         match item {
             RestApiEndpoint::AuthLogin => format!("/{api_version}/auth/login"),
-            RestApiEndpoint::CashierCreateSession => {
+            RestApiEndpoint::CreateCashierSession => {
                 format!("/{api_version}/cashier/session/create")
             }
         }
@@ -23,7 +23,7 @@ impl RestApiEndpoint {
     pub fn get_http_method(&self) -> Method {
         match &self {
             RestApiEndpoint::AuthLogin => Method::POST,
-            RestApiEndpoint::CashierCreateSession => Method::POST,
+            RestApiEndpoint::CreateCashierSession => Method::POST,
         }
     }
 }

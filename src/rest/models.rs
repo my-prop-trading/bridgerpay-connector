@@ -1,4 +1,10 @@
-use serde_derive::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Response<T> {
+    pub response: ResponseModel,
+    pub result: Option<T>,
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LoginRequest {
@@ -9,11 +15,11 @@ pub struct LoginRequest {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LoginResponse {
     pub response: ResponseModel,
-    pub result: LoginResultModel,
+    pub result: LoginModel,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct LoginResultModel {
+pub struct LoginModel {
     pub refresh_token: String,
     pub access_token: AccessTokenModel,
 }
@@ -34,7 +40,7 @@ pub struct ResponseModel {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateCashierSessionRequest {
     /// The Cashier key refers to software-level credentials utilized for the purpose of identifying a merchant.
-    pub cashier_key: String,
+    pub cashier_key: Option<String>,
     /// The Order ID denotes the unique transaction identifier within the merchant's system.
     pub order_id: String,
     /// The currency of the payment transaction will be initiated is determined by adhering to ISO 4217 - Currency Codes (e.g., "USD," "CNY," or "EUR").
@@ -46,10 +52,10 @@ pub struct CreateCashierSessionRequest {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateCashierSessionResponse {
     pub response: ResponseModel,
-    pub result: CreateCashierSessionResultModel,
+    pub result: CashierSessionModel,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CreateCashierSessionResultModel {
+pub struct CashierSessionModel {
     pub cashier_token: String,
 }
