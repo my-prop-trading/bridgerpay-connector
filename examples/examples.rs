@@ -35,6 +35,7 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         platform_id: None,
         tracking_id: None,
         affiliate_id: None,
+        city: None,
     }
 }
 
