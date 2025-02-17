@@ -11,6 +11,7 @@ async fn main() {
     let instant = Instant::now();
     login(&brand_api).await;
     create_cashier_session(&brand_api).await;
+    generate_checkout_widget(&brand_api).await;
 
     println!("elapsed time: {:?}", instant.elapsed());
 }
@@ -24,6 +25,19 @@ pub async fn login(rest_client: &RestApiClient<ExampleApiConfig>) {
 pub async fn create_cashier_session(rest_client: &RestApiClient<ExampleApiConfig>) {
     let resp = rest_client
         .create_cashier_session(CreateCashierSessionRequest {
+            cashier_key: None,
+            order_id: Uuid::new_v4().to_string(),
+            currency: "USD".to_string(),
+            country: "US".to_string(),
+        })
+        .await;
+
+    println!("{:?}", resp)
+}
+
+pub async fn generate_checkout_widget(rest_client: &RestApiClient<ExampleApiConfig>) {
+    let resp = rest_client
+        .generate_checkout_widget(CreateCashierSessionRequest {
             cashier_key: None,
             order_id: Uuid::new_v4().to_string(),
             currency: "USD".to_string(),
