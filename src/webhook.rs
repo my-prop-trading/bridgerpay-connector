@@ -53,14 +53,14 @@ pub struct Charge {
     #[serde(rename = "type")]
     pub charge_type: String,
     pub id: String,
-    pub uuid: String,
+    pub uuid: Option<String>,
     pub psp_order_id: String,
     pub attributes: Attributes,
-    pub is_refundable: bool,
+    pub is_refundable: Option<bool>,
     pub refund_id: Option<String>,
     pub operation_type: Option<String>,
     pub deposit_source: Option<String>,
-    pub is_recurring: bool,
+    pub is_recurring: Option<bool>,
     pub mid_type: Option<String>,
     pub cft_id: Option<String>,
 }
