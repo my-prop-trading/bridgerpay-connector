@@ -57,11 +57,11 @@ pub struct Charge {
     pub psp_order_id: String,
     pub attributes: Attributes,
     pub is_refundable: bool,
-    pub refund_id: String,
-    pub operation_type: String,
-    pub deposit_source: String,
+    pub refund_id: Option<String>,
+    pub operation_type: Option<String>,
+    pub deposit_source: Option<String>,
     pub is_recurring: bool,
-    pub mid_type: String,
+    pub mid_type: Option<String>,
     pub cft_id: Option<String>,
 }
 
@@ -82,27 +82,27 @@ pub struct Attributes {
     pub cash_register_id: Option<String>,
     pub created_at: u64,
     pub updated_at: u64,
-    pub source: Source,
+    pub source: Option<Source>,
     pub card_masked_number: Option<String>,
     pub card_expiration: Option<String>,
     pub card_brand: Option<String>,
     pub card_holder_name: Option<String>,
-    pub customer: Customer,
+    pub customer: Option<Customer>,
     pub credit_card_token: Option<String>,
-    pub mid_alias: String,
-    pub installment_details: String,
+    pub mid_alias: Option<String>,
+    pub installment_details: Option<String>,
     pub is_declined_due_to_funds: bool,
     pub is_hard_decline: bool,
     pub wire_transfer_details: Option<String>,
-    pub verifications: Verifications,
+    pub verifications: Option<Verifications>,
     pub crypto_currency: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Source {
-    pub email: String,
-    pub ip_address: String,
-    pub name: String,
+    pub email: Option<String>,
+    pub ip_address: Option<String>,
+    pub name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
