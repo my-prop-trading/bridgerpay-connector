@@ -1,14 +1,14 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-struct WebhookPayload {
+pub struct WebhookPayload {
     pub webhook: Webhook,
     pub data: WebhookData,
     pub meta: WebhookMeta,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Webhook {
+pub struct Webhook {
     #[serde(rename = "type")]
     pub webhook_type: String,
 }
@@ -27,14 +27,14 @@ pub enum WebhookType {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct WebhookData {
+pub struct WebhookData {
     pub order_id: String,
     pub psp_name: String,
     pub charge: Charge,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Charge {
+pub struct Charge {
     #[serde(rename = "type")]
     pub charge_type: String,
     pub id: String,
@@ -51,7 +51,7 @@ struct Charge {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Attributes {
+pub struct Attributes {
     pub is3_d: bool,
     pub live_mode: bool,
     pub amount: u32,
@@ -84,14 +84,14 @@ struct Attributes {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Source {
+pub struct Source {
     pub email: String,
     pub ip_address: String,
     pub name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Customer {
+pub struct Customer {
     pub first_name: Option<String>,
     pub last_name: Option<String>,
     pub address: Option<String>,
@@ -103,14 +103,14 @@ struct Customer {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Verifications {
+pub struct Verifications {
     pub cavv: Option<String>,
     pub cavv_message: Option<String>,
     pub avs: Avs,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct Avs {
+pub struct Avs {
     pub result: Option<String>,
     pub zip_match: Option<String>,
     pub address_match: Option<String>,
@@ -119,7 +119,7 @@ struct Avs {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct WebhookMeta {
+pub struct WebhookMeta {
     pub server_time: u64,
     pub server_timezone: String,
     pub api_version: String,
