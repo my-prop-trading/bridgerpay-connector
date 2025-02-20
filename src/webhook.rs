@@ -44,7 +44,7 @@ pub enum WebhookType {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WebhookData {
     pub order_id: String,
-    pub psp_name: String,
+    pub psp_name: Option<String>,
     pub charge: Option<Charge>,
 }
 
