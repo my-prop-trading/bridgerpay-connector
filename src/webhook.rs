@@ -24,6 +24,21 @@ pub enum WebhookType {
     #[strum(to_string = "approved_on_hold")]
     #[serde(rename = "approved_on_hold")]
     ApprovedOnHold,
+    #[strum(to_string = "Refunds")]
+    #[serde(rename = "Refunds")]
+    Refunds,
+    #[strum(to_string = "PreAuth")]
+    #[serde(rename = "PreAuth")]
+    PreAuth,
+    #[strum(to_string = "Capture")]
+    #[serde(rename = "Capture")]
+    Capture,
+    #[strum(to_string = "Void")]
+    #[serde(rename = "Void")]
+    Void,
+    #[strum(to_string = "Payout")]
+    #[serde(rename = "Payout")]
+    Payout,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
