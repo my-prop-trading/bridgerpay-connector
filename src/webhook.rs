@@ -69,7 +69,7 @@ pub struct Charge {
 pub struct Attributes {
     pub is3_d: bool,
     pub live_mode: bool,
-    pub amount: u32,
+    pub amount: f64,
     pub status: String,
     pub card_number: Option<String>,
     pub currency: String,
