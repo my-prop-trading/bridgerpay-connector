@@ -10,7 +10,7 @@ pub struct CheckoutPayloadModel {
     #[prost(int64, tag = "1")]
     pub timestamp: i64,
     #[prost(map = "string, string", tag = "2")]
-    pub key_values: HashMap<String, String>,
+    pub metadata: HashMap<String, String>,
 }
 
 impl CheckoutPayloadModel {

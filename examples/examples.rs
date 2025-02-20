@@ -34,7 +34,7 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         payload: Some(
             CheckoutPayloadModel {
                 timestamp: 123,
-                key_values: HashMap::from([("client_id".to_string(), "test-client-id".to_string())]),
+                metadata: HashMap::from([("client_id".to_string(), "test-client-id".to_string())]),
             }
             .encrypt(&std::env::var("API_KEY").unwrap()),
         ),
