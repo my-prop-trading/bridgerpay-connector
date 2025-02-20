@@ -9,7 +9,11 @@ pub mod webhook;
 pub struct CheckoutPayloadModel {
     #[prost(int64, tag = "1")]
     pub timestamp: i64,
-    #[prost(map = "string, string", tag = "2")]
+    #[prost(string, tag = "2")]
+    pub order_id: String,
+    #[prost(string, tag = "3")]
+    pub client_id: String, 
+    #[prost(map = "string, string", tag = "4")] 
     pub metadata: HashMap<String, String>,
 }
 
