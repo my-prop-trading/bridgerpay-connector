@@ -24,13 +24,13 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         order_id: Uuid::new_v4().to_string(),
         currency: "USD".to_string(),
         country: "US".to_string(),
-        amount: None,
+        amount: Some(10.0),
         theme: None,
-        first_name: None,
-        last_name: None,
-        phone: None,
-        email: None,
-        zip_code: None,
+        first_name: Some(String::from("John Smith")),
+        last_name: Some(String::from("Doe")),
+        phone: Some("38506466464".to_string()),
+        email: Some("test1234@mailinator.com".to_string()),
+        zip_code: Some(String::from("14900")),
         payload: Some(
             CheckoutPayloadModel {
                 timestamp: 123,
@@ -38,12 +38,12 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
             }
             .encrypt(&std::env::var("API_KEY").unwrap()),
         ),
-        currency_lock: None,
-        amount_lock: None,
+        currency_lock: Some(true),
+        amount_lock: Some(true),
         platform_id: None,
         tracking_id: None,
         affiliate_id: None,
-        city: None,
+        city: Some("Sofia".to_string()),
     }
 }
 

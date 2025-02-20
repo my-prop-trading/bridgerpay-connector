@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WebhookPayload {
     pub webhook: Webhook,
-    pub data: WebhookData,
+    pub data: Option<WebhookData>,
     pub meta: WebhookMeta,
 }
 
@@ -67,13 +67,13 @@ pub struct Charge {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Attributes {
-    pub is3_d: bool,
-    pub live_mode: bool,
+    pub is3_d: Option<bool>,
+    pub live_mode: Option<bool>,
     pub amount: f64,
     pub status: String,
     pub card_number: Option<String>,
     pub currency: String,
-    pub payment_method: String,
+    pub payment_method: Option<String>,
     pub description: Option<String>,
     pub decline_code: Option<String>,
     pub decline_reason: Option<String>,
@@ -81,7 +81,7 @@ pub struct Attributes {
     pub pos_terminal_id: Option<String>,
     pub cash_register_id: Option<String>,
     pub created_at: u64,
-    pub updated_at: u64,
+    pub updated_at: Option<u64>,
     pub source: Option<Source>,
     pub card_masked_number: Option<String>,
     pub card_expiration: Option<String>,
@@ -91,8 +91,8 @@ pub struct Attributes {
     pub credit_card_token: Option<String>,
     pub mid_alias: Option<String>,
     pub installment_details: Option<String>,
-    pub is_declined_due_to_funds: bool,
-    pub is_hard_decline: bool,
+    pub is_declined_due_to_funds: Option<bool>,
+    pub is_hard_decline: Option<bool>,
     pub wire_transfer_details: Option<String>,
     pub verifications: Option<Verifications>,
     pub crypto_currency: Option<String>,
@@ -121,7 +121,7 @@ pub struct Customer {
 pub struct Verifications {
     pub cavv: Option<String>,
     pub cavv_message: Option<String>,
-    pub avs: Avs,
+    pub avs: Option<Avs>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
