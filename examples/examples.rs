@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use bridgerpay_connector::rest::api_client::{RestApiClient, RestApiConfig};
 use bridgerpay_connector::rest::CreateCashierSessionRequest;
 use bridgerpay_connector::CheckoutPayloadModel;
@@ -32,10 +33,8 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         zip_code: None,
         payload: Some(
             CheckoutPayloadModel {
-                client_id: "test-client-id".to_string(),
-                account_id: "test-account-id".to_string(),
-                ref_id: "ref-id".to_string(),
                 timestamp: 123,
+                key_values: HashMap::from([("client_id".to_string(), "test-client-id".to_string())]),
             }
             .encrypt(&std::env::var("API_KEY").unwrap()),
         ),

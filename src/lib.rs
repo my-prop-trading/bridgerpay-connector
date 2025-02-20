@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use crate::cipher::MessageCipher;
 
 pub mod cipher;
@@ -8,12 +9,8 @@ pub mod webhook;
 pub struct CheckoutPayloadModel {
     #[prost(int64, tag = "1")]
     pub timestamp: i64,
-    #[prost(string, tag = "2")]
-    pub client_id: String,
-    #[prost(string, tag = "3")]
-    pub account_id: String,
-    #[prost(string, tag = "4")]
-    pub ref_id: String,
+    #[prost(map = "string, string", tag = "2")]
+    pub key_values: HashMap<String, String>,
 }
 
 impl CheckoutPayloadModel {
