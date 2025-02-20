@@ -45,7 +45,7 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         affiliate_id: None,
         city: Some("Sofia".to_string()),
         address: Some("Address".to_string()),
-        state: Some("State".to_string()),
+        state: Some("Alabama".to_string()),
     }
 }
 
