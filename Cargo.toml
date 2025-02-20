@@ -16,6 +16,12 @@ async-trait = "*"
 error-chain = { version = "0.12.4", default-features = false }
 serde_qs = "*"
 strum = { version = "0.26", features = ["derive"] }
+# encryption-----------
+base64 = "*"
+libaes = "*"
+prost = "*"
+sha2 = "*"
+# ---------------------
 
 [dev-dependencies]
 uuid = { version = "*", features = ["v4"] }

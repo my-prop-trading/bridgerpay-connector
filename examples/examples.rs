@@ -1,5 +1,6 @@
 use bridgerpay_connector::rest::api_client::{RestApiClient, RestApiConfig};
 use bridgerpay_connector::rest::CreateCashierSessionRequest;
+use bridgerpay_connector::CheckoutPayloadModel;
 use std::time::Duration;
 use tokio::time::Instant;
 use uuid::Uuid;
@@ -29,7 +30,15 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         phone: None,
         email: None,
         zip_code: None,
-        payload: None,
+        payload: Some(
+            CheckoutPayloadModel {
+                client_id: "test-client-id".to_string(),
+                account_id: "test-account-id".to_string(),
+                ref_id: "ref-id".to_string(),
+                timestamp: 123,
+            }
+            .encrypt(&std::env::var("API_KEY").unwrap()),
+        ),
         currency_lock: None,
         amount_lock: None,
         platform_id: None,
