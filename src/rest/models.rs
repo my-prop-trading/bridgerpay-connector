@@ -78,6 +78,10 @@ pub struct CreateCashierSessionRequest {
     pub affiliate_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub city: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub address: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub state: Option<String>,
 }
 
 #[derive(strum::Display, Debug, Clone, Serialize, Deserialize)]
