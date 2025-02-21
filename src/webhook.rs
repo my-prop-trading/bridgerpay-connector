@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize)]
 pub struct WebhookPayload {
     pub webhook: Webhook,
-    pub data: Option<WebhookData>,
+    pub data: String,
     pub meta: WebhookMeta,
 }
 
