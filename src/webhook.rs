@@ -55,7 +55,7 @@ pub struct Charge {
     pub id: String,
     pub uuid: Option<String>,
     pub psp_order_id: String,
-    pub attributes: Attributes,
+    pub attributes: ChargeAttributes,
     pub is_refundable: Option<bool>,
     pub refund_id: Option<String>,
     pub operation_type: Option<String>,
@@ -66,7 +66,7 @@ pub struct Charge {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Attributes {
+pub struct ChargeAttributes {
     pub is3_d: Option<bool>,
     pub live_mode: Option<bool>,
     pub amount: f64,
@@ -82,31 +82,31 @@ pub struct Attributes {
     pub cash_register_id: Option<String>,
     pub created_at: u64,
     pub updated_at: Option<u64>,
-    pub source: Option<Source>,
+    pub source: Option<AttributesSource>,
     pub card_masked_number: Option<String>,
     pub card_expiration: Option<String>,
     pub card_brand: Option<String>,
     pub card_holder_name: Option<String>,
-    pub customer: Option<Customer>,
+    pub customer: Option<AttributesCustomer>,
     pub credit_card_token: Option<String>,
     pub mid_alias: Option<String>,
     pub installment_details: Option<String>,
     pub is_declined_due_to_funds: Option<bool>,
     pub is_hard_decline: Option<bool>,
     pub wire_transfer_details: Option<String>,
-    pub verifications: Option<Verifications>,
+    pub verifications: Option<AttributesVerifications>,
     pub crypto_currency: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Source {
+pub struct AttributesSource {
     pub email: Option<String>,
     pub ip_address: Option<String>,
     pub name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Customer {
+pub struct AttributesCustomer {
     pub first_name: Option<String>,
     pub last_name: Option<String>,
     pub address: Option<String>,
@@ -118,7 +118,7 @@ pub struct Customer {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Verifications {
+pub struct AttributesVerifications {
     pub cavv: Option<String>,
     pub cavv_message: Option<String>,
     pub avs: Option<Avs>,

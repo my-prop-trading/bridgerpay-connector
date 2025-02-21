@@ -1,7 +1,7 @@
-use std::collections::HashMap;
 use bridgerpay_connector::rest::api_client::{RestApiClient, RestApiConfig};
 use bridgerpay_connector::rest::CreateCashierSessionRequest;
-use bridgerpay_connector::CheckoutPayloadModel;
+use bridgerpay_connector::{BridgerpaySign, CheckoutPayloadModel};
+use std::collections::HashMap;
 use std::time::Duration;
 use tokio::time::Instant;
 use uuid::Uuid;
@@ -19,12 +19,16 @@ async fn main() {
 }
 
 pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
+    let order_id = Uuid::new_v4().to_string();
+    let amount = 10.0;
+    let currency = "USD".to_string();
+
     CreateCashierSessionRequest {
         cashier_key: None,
-        order_id: Uuid::new_v4().to_string(),
-        currency: "USD".to_string(),
+        order_id: order_id.clone(),
+        currency: currency.clone(),
         country: "US".to_string(),
-        amount: Some(10.0),
+        amount: Some(amount),
         theme: None,
         first_name: Some(String::from("John Smith")),
         last_name: Some(String::from("Doe")),
@@ -34,7 +38,15 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         payload: Some(
             CheckoutPayloadModel {
                 timestamp: 123,
-                metadata: HashMap::from([("client_id".to_string(), "test-client-id".to_string())]),
+                client_id: "test-client-id".to_string(),
+                sign: BridgerpaySign {
+                    amount,
+                    order_id,
+                    currency,
+                }
+                .generate_sign(&std::env::var("API_KEY").unwrap())
+                .unwrap(),
+                metadata: HashMap::from([("test".to_string(), "test".to_string())]),
             }
             .encrypt(&std::env::var("API_KEY").unwrap()),
         ),
