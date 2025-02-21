@@ -1,8 +1,10 @@
 use crate::cipher::MessageCipher;
 use base64::engine::general_purpose;
 use base64::Engine;
+use prost::Message;
 use ring::hmac;
-use serde::Serialize;
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 pub mod cipher;
@@ -32,27 +34,25 @@ impl CheckoutPayloadModel {
 }
 
 #[derive(Clone, Serialize)]
-pub struct BridgerpaySign {
+pub struct CheckoutSign {
     pub amount: f64,
     pub order_id: String,
     pub currency: String,
 }
 
-impl BridgerpaySign {    
-    pub fn generate_sign(&self, key: &str) -> Result<String, String> {
-        let data = serde_json::to_string(self);
+pub fn generate_sign<T: Serialize>(data: &T, key: &str) -> Result<String, String> {
+    let data = serde_json::to_string(data);
 
-        let Ok(data) = data else {
-            return Err(format!("{}", data.unwrap_err()));
-        };
+    let Ok(data) = data else {
+        return Err(format!("{}", data.unwrap_err()));
+    };
 
-        Ok(self.sign_str(&data, key))
-    }
+    Ok(sign_str(&data, key))
+}
 
-    fn sign_str(&self, str: &str, key: &str) -> String {
-        let key = hmac::Key::new(hmac::HMAC_SHA512, key.as_bytes());
-        let signature = hmac::sign(&key, str.as_bytes());
+fn sign_str(str: &str, key: &str) -> String {
+    let key = hmac::Key::new(hmac::HMAC_SHA512, key.as_bytes());
+    let signature = hmac::sign(&key, str.as_bytes());
 
-        general_purpose::STANDARD.encode(signature)
-    }
+    general_purpose::STANDARD.encode(signature)
 }

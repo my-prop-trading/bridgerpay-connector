@@ -1,6 +1,6 @@
 use bridgerpay_connector::rest::api_client::{RestApiClient, RestApiConfig};
 use bridgerpay_connector::rest::CreateCashierSessionRequest;
-use bridgerpay_connector::{BridgerpaySign, CheckoutPayloadModel};
+use bridgerpay_connector::{generate_sign, CheckoutPayloadModel, CheckoutSign};
 use std::collections::HashMap;
 use std::time::Duration;
 use tokio::time::Instant;
@@ -39,12 +39,14 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
             CheckoutPayloadModel {
                 timestamp: 123,
                 client_id: "test-client-id".to_string(),
-                sign: BridgerpaySign {
-                    amount,
-                    order_id,
-                    currency,
-                }
-                .generate_sign(&std::env::var("API_KEY").unwrap())
+                sign: generate_sign(
+                    &CheckoutSign {
+                        amount,
+                        order_id,
+                        currency,
+                    },
+                    &std::env::var("API_KEY").unwrap(),
+                )
                 .unwrap(),
                 metadata: HashMap::from([("test".to_string(), "test".to_string())]),
             }
