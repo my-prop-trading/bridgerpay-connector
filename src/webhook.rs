@@ -53,9 +53,9 @@ pub struct WebhookData {
 pub struct Charge {
     #[serde(rename = "type")]
     pub charge_type: String,
-    pub id: String,
+    pub id: Option<String>,
     pub uuid: Option<String>,
-    pub psp_order_id: String,
+    pub psp_order_id: Option<String>,
     pub attributes: ChargeAttributes,
     pub is_refundable: Option<bool>,
     pub refund_id: Option<String>,
@@ -64,6 +64,7 @@ pub struct Charge {
     pub is_recurring: Option<bool>,
     pub mid_type: Option<String>,
     pub cft_id: Option<String>,
+    pub order_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
