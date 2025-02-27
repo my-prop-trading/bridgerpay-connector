@@ -38,8 +38,8 @@ pub enum WebhookType {
     #[strum(to_string = "cashier.session.init")]
     #[serde(rename = "cashier.session.init")]
     CashierSessionInit,
-    #[strum(to_string = "cashier.session.closed")]
-    #[serde(rename = "cashier.session.closed")]
+    #[strum(to_string = "cashier.session.close")]
+    #[serde(rename = "cashier.session.close")]
     CashierSessionClosed,
     #[strum(to_string = "payment_card_token")]
     #[serde(rename = "payment_card_token")]
@@ -181,4 +181,14 @@ pub struct WebhookMeta {
     pub platform_id: Option<String>,
     pub tracking_id: Option<String>,
     pub affiliate_id: Option<String>,
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::webhook::WebhookType;
+
+    #[test]
+    pub fn test() {
+        println!("{}", WebhookType::CashierSessionClosed.to_string());
+    }
 }
