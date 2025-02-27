@@ -109,7 +109,7 @@ pub struct ChargeAttributes {
     pub customer: Option<AttributesCustomer>,
     pub credit_card_token: Option<String>,
     pub mid_alias: Option<String>,
-    pub installment_details: Option<String>,
+    //pub installment_details: Option<String>,
     pub is_declined_due_to_funds: Option<bool>,
     pub is_hard_decline: Option<bool>,
     pub wire_transfer_details: Option<String>,
