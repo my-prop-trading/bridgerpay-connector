@@ -15,7 +15,7 @@ pub struct WebhookPayload {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Webhook {
     #[serde(rename = "type")]
-    pub webhook_type: String,
+    pub webhook_type: WebhookType,
 }
 
 #[derive(strum::Display, Debug, Clone, Serialize, Deserialize)]
@@ -29,21 +29,21 @@ pub enum WebhookType {
     #[strum(to_string = "approved_on_hold")]
     #[serde(rename = "approved_on_hold")]
     ApprovedOnHold,
-    #[strum(to_string = "Refunds")]
-    #[serde(rename = "Refunds")]
-    Refunds,
-    #[strum(to_string = "PreAuth")]
-    #[serde(rename = "PreAuth")]
-    PreAuth,
-    #[strum(to_string = "Capture")]
-    #[serde(rename = "Capture")]
-    Capture,
-    #[strum(to_string = "Void")]
-    #[serde(rename = "Void")]
-    Void,
-    #[strum(to_string = "Payout")]
-    #[serde(rename = "Payout")]
-    Payout,
+    #[strum(to_string = "authorized")]
+    #[serde(rename = "authorized")]
+    Authorized,
+    #[strum(to_string = "voided")]
+    #[serde(rename = "voided")]
+    Voided,
+    #[strum(to_string = "cashier.session.init")]
+    #[serde(rename = "cashier.session.init")]
+    CashierSessionInit,
+    #[strum(to_string = "cashier.session.closed")]
+    #[serde(rename = "cashier.session.closed")]
+    CashierSessionClosed,
+    #[strum(to_string = "payment_card_token")]
+    #[serde(rename = "payment_card_token")]
+    PaymentCardToken,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -63,7 +63,7 @@ pub struct Charge {
     pub attributes: ChargeAttributes,
     pub is_refundable: Option<bool>,
     pub refund_id: Option<String>,
-    pub operation_type: Option<String>,
+    pub operation_type: Option<ChargeOperationType>,
     pub deposit_source: Option<String>,
     pub is_recurring: Option<bool>,
     pub mid_type: Option<String>,
@@ -71,14 +71,27 @@ pub struct Charge {
     pub order_id: Option<String>,
 }
 
+#[derive(strum::Display, Debug, Clone, Serialize, Deserialize)]
+pub enum ChargeOperationType {
+    #[strum(to_string = "deposit")]
+    #[serde(rename = "deposit")]
+    Deposit,
+    #[strum(to_string = "refund")]
+    #[serde(rename = "refund")]
+    Refund,
+    #[strum(to_string = "payout")]
+    #[serde(rename = "payout")]
+    Payout,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ChargeAttributes {
     pub is3_d: Option<bool>,
     pub live_mode: Option<bool>,
-    pub amount: f64,
-    pub status: String,
+    pub amount: Option<f64>,
+    pub status: ChargeAttributesStatus,
     pub card_number: Option<String>,
-    pub currency: String,
+    pub currency: Option<String>,
     pub payment_method: Option<String>,
     pub description: Option<String>,
     pub decline_code: Option<String>,
@@ -102,6 +115,25 @@ pub struct ChargeAttributes {
     pub wire_transfer_details: Option<String>,
     pub verifications: Option<AttributesVerifications>,
     pub crypto_currency: Option<String>,
+}
+
+#[derive(strum::Display, Debug, Clone, Serialize, Deserialize)]
+pub enum ChargeAttributesStatus {
+    #[strum(to_string = "approved")]
+    #[serde(rename = "approved")]
+    Approved,
+    #[strum(to_string = "approved_on_hold")]
+    #[serde(rename = "approved_on_hold")]
+    ApprovedOnHold,
+    #[strum(to_string = "declined")]
+    #[serde(rename = "declined")]
+    Declined,
+    #[strum(to_string = "authorized")]
+    #[serde(rename = "authorized")]
+    Authorized,
+    #[strum(to_string = "voided")]
+    #[serde(rename = "voided")]
+    Voided,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
