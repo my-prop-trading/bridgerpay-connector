@@ -18,7 +18,7 @@ pub struct Webhook {
     pub webhook_type: WebhookType,
 }
 
-#[derive(strum::Display, Debug, Clone, Serialize, Deserialize)]
+#[derive(strum::Display, Debug, Clone, Serialize, Deserialize, PartialOrd, PartialEq)]
 pub enum WebhookType {
     #[strum(to_string = "approved")]
     #[serde(rename = "approved")]
@@ -71,7 +71,7 @@ pub struct Charge {
     pub order_id: Option<String>,
 }
 
-#[derive(strum::Display, Debug, Clone, Serialize, Deserialize)]
+#[derive(strum::Display, Debug, Clone, Serialize, Deserialize, PartialOrd, PartialEq)]
 pub enum ChargeOperationType {
     #[strum(to_string = "deposit")]
     #[serde(rename = "deposit")]
@@ -117,7 +117,7 @@ pub struct ChargeAttributes {
     pub crypto_currency: Option<String>,
 }
 
-#[derive(strum::Display, Debug, Clone, Serialize, Deserialize)]
+#[derive(strum::Display, Debug, Clone, Serialize, Deserialize, PartialOrd, PartialEq)]
 pub enum ChargeAttributesStatus {
     #[strum(to_string = "approved")]
     #[serde(rename = "approved")]
