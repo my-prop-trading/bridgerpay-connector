@@ -1,10 +1,8 @@
 use crate::cipher::MessageCipher;
 use base64::engine::general_purpose;
 use base64::Engine;
-use prost::Message;
 use ring::hmac;
-use serde::de::DeserializeOwned;
-use serde::{Deserialize, Serialize};
+use serde::{Serialize};
 use std::collections::HashMap;
 
 pub mod cipher;

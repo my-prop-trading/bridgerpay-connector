@@ -1,4 +1,4 @@
-use bridgerpay_connector::rest::api_client::{RestApiClient, RestApiConfig};
+use bridgerpay_connector::rest::api_client::{CheckoutWidgetType, RestApiClient, RestApiConfig};
 use bridgerpay_connector::rest::CreateCashierSessionRequest;
 use bridgerpay_connector::{generate_sign, CheckoutPayloadModel, CheckoutSign};
 use std::collections::HashMap;
@@ -79,7 +79,7 @@ pub async fn create_cashier_session(rest_client: &RestApiClient<ExampleApiConfig
 
 pub async fn generate_checkout_widget(rest_client: &RestApiClient<ExampleApiConfig>) {
     let resp = rest_client
-        .generate_checkout_widget(create_cashier_session_req())
+        .generate_checkout_widget(create_cashier_session_req(), CheckoutWidgetType::Wrapped)
         .await;
 
     println!("{:?}", resp)
