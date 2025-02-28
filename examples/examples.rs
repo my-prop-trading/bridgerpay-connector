@@ -79,7 +79,7 @@ pub async fn create_cashier_session(rest_client: &RestApiClient<ExampleApiConfig
 
 pub async fn generate_checkout_widget(rest_client: &RestApiClient<ExampleApiConfig>) {
     let resp = rest_client
-        .generate_checkout_widget(create_cashier_session_req(), CheckoutWidgetType::Wrapped)
+        .generate_checkout_widget(create_cashier_session_req(), CheckoutWidgetType::Regular)
         .await;
 
     println!("{:?}", resp)

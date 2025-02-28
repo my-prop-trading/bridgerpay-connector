@@ -12,7 +12,36 @@ use std::fmt::Debug;
 use std::time::Duration;
 
 const CHECKOUT_WIDGET_TEMPLATE: &str = "<html><body><script src='https://checkout.bridgerpay.com/v2/launcher' data-cashier-key='{{cashier_key}}' data-cashier-token='{{cashier_token}}'></script></body></html>";
-const WRAPPED_CHECKOUT_WIDGET_TEMPLATE: &str = "<!DOCTYPE html><html><head><script src='https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.min.js' integrity='sha512-+bpyZqiNr/4QlUd6YnrAeLXzgooA1HKN5yUagHgPSMACPZgj8bkpCyZezPtDy5XbviRm4w8Z1RhfuWyoWaeCyg==' crossorigin='anonymous' referrerpolicy='no-referrer'></script></head><body><iframe id='wrappedCheckout' width='100%' srcdoc='<html><head><script src='https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.contentWindow.min.js' integrity='sha512-mdT/HQRzoRP4laVz49Mndx6rcCGA3IhuyhP3gaY0E9sZPkwbtDk9ttQIq9o8qGCf5VvJv1Xsy3k2yTjfUoczqw==' crossorigin='anonymous' referrerpolicy='no-referrer'></script></head><body><scriptsrc='https://checkout.bridgerpay.com/v2/launcher' data-cashier-key='{{cashier_key}}' data-cashier-token='{{cashier_token}}'></script><script>window.addEventListener('[bp]:redirect',({detail:{url}})=>window.top.location.href=url)</script></body></html>'></iframe><script>iFrameResize({checkOrigin:false},'#wrappedCheckout')</script></body></html>";
+const WRAPPED_CHECKOUT_WIDGET_TEMPLATE: &str = r#"<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.min.js" integrity="sha512-+bpyZqiNr/4QlUd6YnrAeLXzgooA1HKN5yUagHgPSMACPZgj8bkpCyZezPtDy5XbviRm4w8Z1RhfuWyoWaeCyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <h1>Merchant Page</h1>
+    <iframe id="wrappedCheckout" width="100%" srcdoc="<html>
+        <head>
+            <script src='https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.contentWindow.min.js' integrity='sha512-mdT/HQRzoRP4laVz49Mndx6rcCGA3IhuyhP3gaY0E9sZPkwbtDk9ttQIq9o8qGCf5VvJv1Xsy3k2yTjfUoczqw==' crossorigin='anonymous' referrerpolicy='no-referrer'></script>
+        </head>
+        <body>
+            <script src='https://checkout.bridgerpay.com/v2/launcher'
+            				data-cashier-key='{{cashier_key}}'
+            				data-cashier-token='{{cashier_token}}'
+            ></script>
+            <script>
+              window.addEventListener(
+                '[bp]:redirect', 
+                ({ detail: { url }}) => window.top.location.href = url
+              )                                       
+            </script>
+        </body>
+    </html>">
+    </iframe>
+    <script>
+        iFrameResize({ checkOrigin: false }, '#wrappedCheckout')
+    </script>
+</body>
+</html>"#;
 
 #[async_trait::async_trait]
 pub trait RestApiConfig {
