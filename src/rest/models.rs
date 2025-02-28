@@ -82,6 +82,10 @@ pub struct CreateCashierSessionRequest {
     pub address: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub state: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hide_languages_dropdown: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
 }
 
 #[derive(strum::Display, Debug, Clone, Serialize, Deserialize)]

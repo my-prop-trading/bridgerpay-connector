@@ -60,6 +60,8 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         city: Some("Sofia".to_string()),
         address: Some("Address".to_string()),
         state: Some("Alabama".to_string()),
+        hide_languages_dropdown: None,
+        language: None,
     }
 }
 
