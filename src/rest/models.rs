@@ -86,6 +86,13 @@ pub struct CreateCashierSessionRequest {
     pub hide_languages_dropdown: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub language: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub apple_pay: Option<ApplePayModel>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ApplePayModel {
+    pub shipping_contact_required: Option<bool>,
 }
 
 #[derive(strum::Display, Debug, Clone, Serialize, Deserialize)]

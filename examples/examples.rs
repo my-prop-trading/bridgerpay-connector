@@ -1,5 +1,5 @@
 use bridgerpay_connector::rest::api_client::{CheckoutWidgetType, RestApiClient, RestApiConfig};
-use bridgerpay_connector::rest::CreateCashierSessionRequest;
+use bridgerpay_connector::rest::{CreateCashierSessionRequest};
 use bridgerpay_connector::{generate_sign, CheckoutPayloadModel, CheckoutSign};
 use std::collections::HashMap;
 use std::time::Duration;
@@ -62,6 +62,7 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         state: Some("Alabama".to_string()),
         hide_languages_dropdown: None,
         language: None,
+        apple_pay: None,
     }
 }
 
