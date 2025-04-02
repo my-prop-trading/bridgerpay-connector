@@ -6,6 +6,11 @@ pub struct WebhookTypeValue {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub struct WebhookMetaValue {
+    pub meta: WebhookMeta,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct WebhookPayload {
     pub webhook: Webhook,
     pub data: WebhookData,
