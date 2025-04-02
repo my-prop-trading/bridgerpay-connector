@@ -42,13 +42,14 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
                 sign: generate_sign(
                     &CheckoutSign {
                         amount,
-                        order_id,
+                        order_id: order_id.clone(),
                         currency,
                     },
                     &std::env::var("API_KEY").unwrap(),
                 )
                 .unwrap(),
                 metadata: HashMap::from([("test".to_string(), "test".to_string())]),
+                order_id,
             }
             .encrypt(&std::env::var("API_KEY").unwrap()),
         ),

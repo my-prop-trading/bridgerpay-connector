@@ -19,6 +19,8 @@ pub struct CheckoutPayloadModel {
     pub sign: String,
     #[prost(map = "string, string", tag = "4")]
     pub metadata: HashMap<String, String>,
+    #[prost(string, tag = "5")]
+    pub order_id: String,
 }
 
 impl CheckoutPayloadModel {
