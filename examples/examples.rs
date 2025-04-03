@@ -1,5 +1,5 @@
 use bridgerpay_connector::rest::api_client::{CheckoutWidgetType, RestApiClient, RestApiConfig};
-use bridgerpay_connector::rest::{CreateCashierSessionRequest};
+use bridgerpay_connector::rest::{ApplePayModel, CreateCashierSessionRequest};
 use bridgerpay_connector::{generate_sign, CheckoutPayloadModel, CheckoutSign};
 use std::collections::HashMap;
 use std::time::Duration;
@@ -27,14 +27,14 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         cashier_key: None,
         order_id: order_id.clone(),
         currency: currency.clone(),
-        country: "US".to_string(),
+        country: "NL".to_string(),
         amount: Some(amount),
         theme: None,
         first_name: Some(String::from("John Smith")),
         last_name: Some(String::from("Doe")),
         phone: Some("38506466464".to_string()),
         email: Some("test1234@mailinator.com".to_string()),
-        zip_code: Some(String::from("14900")),
+        zip_code: Some(String::from("1718 AZ")),
         payload: Some(
             CheckoutPayloadModel {
                 timestamp: 123,
@@ -58,12 +58,15 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         platform_id: None,
         tracking_id: None,
         affiliate_id: None,
-        city: Some("Sofia".to_string()),
-        address: Some("Address".to_string()),
-        state: Some("Alabama".to_string()),
+        city: Some("Hoogwoud".to_string()),
+        address: Some("Boenluif 30".to_string()),
+        state: None,
         hide_languages_dropdown: None,
         language: None,
-        apple_pay: None,
+        //apple_pay: None,
+        apple_pay: Some(ApplePayModel {
+            shipping_contact_required: Some(true),
+        }),
     }
 }
 
