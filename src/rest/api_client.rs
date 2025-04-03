@@ -41,6 +41,7 @@ const WRAPPED_CHECKOUT_WIDGET_TEMPLATE: &str = r#"<!DOCTYPE html>
     </script>
 </body>
 </html>"#;
+const WALLET_CHECKOUT_WIDGET_TEMPLATE: &str = "<html><body><script src='https://checkout.bridgerpay.com/v2/launcher' data-cashier-key='{{cashier_key}}' data-cashier-token='{{cashier_token}}' data-button-mode='wallet'></script></body></html>";
 
 #[async_trait::async_trait]
 pub trait RestApiConfig {
@@ -121,6 +122,7 @@ impl<C: RestApiConfig> RestApiClient<C> {
         let template = match widget_type {
             CheckoutWidgetType::Regular => CHECKOUT_WIDGET_TEMPLATE,
             CheckoutWidgetType::Wrapped => WRAPPED_CHECKOUT_WIDGET_TEMPLATE,
+            CheckoutWidgetType::Wallet => WALLET_CHECKOUT_WIDGET_TEMPLATE,
         };
         let html = template
             .replace("{{cashier_key}}", &self.config.get_cashier_key().await)
@@ -389,4 +391,5 @@ mod tests {
 pub enum CheckoutWidgetType {
     Regular,
     Wrapped,
+    Wallet,
 }
