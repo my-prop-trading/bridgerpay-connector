@@ -1,6 +1,6 @@
 [package]
 name = "bridgerpay-connector"
-version = "0.2.15"
+version = "0.2.16"
 edition = "2021"
 authors = ["gorin <mxmgorin@gmail.com>"]
 
@@ -21,7 +21,6 @@ base64 = "*"
 libaes = "*"
 prost = "*"
 sha2 = "*"
-hmac = "0.13.0-pre.4"
 ring = "0.17.9"
 # ---------------------
 

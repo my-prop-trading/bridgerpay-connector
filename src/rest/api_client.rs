@@ -41,7 +41,18 @@ const WRAPPED_CHECKOUT_WIDGET_TEMPLATE: &str = r#"<!DOCTYPE html>
     </script>
 </body>
 </html>"#;
-const WALLET_CHECKOUT_WIDGET_TEMPLATE: &str = "<html><body><script src='https://checkout.bridgerpay.com/v2/launcher' data-cashier-key='{{cashier_key}}' data-cashier-token='{{cashier_token}}' data-button-mode='wallet'></script></body></html>";
+
+const WALLET_SCRIPT_TEMPLATE: &str = "<script src='https://checkout.bridgerpay.com/v2/launcher' data-cashier-key='{{cashier_key}}' data-cashier-token='{{cashier_token}}' data-button-mode='wallet'></script>";
+
+fn fill_template(template: &str, params: &CheckoutWidgetParams) -> String {
+    template
+        .replace("{{cashier_key}}", &params.cashier_key)
+        .replace("{{cashier_token}}", &params.cashier_token)
+}
+
+fn get_wallet_checkout_widget_template() -> String {
+    format!("<html><body>{}</body></html>", WALLET_SCRIPT_TEMPLATE)
+}
 
 #[async_trait::async_trait]
 pub trait RestApiConfig {
@@ -122,16 +133,16 @@ impl<C: RestApiConfig> RestApiClient<C> {
         let template = match widget_type {
             CheckoutWidgetType::Regular => CHECKOUT_WIDGET_TEMPLATE,
             CheckoutWidgetType::Wrapped => WRAPPED_CHECKOUT_WIDGET_TEMPLATE,
-            CheckoutWidgetType::Wallet => WALLET_CHECKOUT_WIDGET_TEMPLATE,
+            CheckoutWidgetType::Wallet => &get_wallet_checkout_widget_template(),
         };
         let cashier_key = self.config.get_cashier_key().await;
-        let html = template
-            .replace("{{cashier_key}}", &cashier_key)
-            .replace("{{cashier_token}}", &session.cashier_token);
-        let model = CheckoutWidgetModel {
-            html,
+        let params = CheckoutWidgetParams {
             cashier_key,
             cashier_token: session.cashier_token,
+        };
+        let model = CheckoutWidgetModel {
+            html: fill_template(template, &params),
+            params,
         };
 
         Ok(model)
@@ -403,6 +414,17 @@ pub enum CheckoutWidgetType {
 #[derive(Debug, Clone)]
 pub struct CheckoutWidgetModel {
     pub html: String,
+    pub params: CheckoutWidgetParams,
+}
+
+impl CheckoutWidgetModel {
+    pub fn get_wallet_script(&self) -> String {
+        fill_template(WALLET_SCRIPT_TEMPLATE, &self.params)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct CheckoutWidgetParams {
     pub cashier_key: String,
     pub cashier_token: String,
 }
