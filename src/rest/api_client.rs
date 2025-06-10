@@ -18,7 +18,6 @@ const WRAPPED_CHECKOUT_WIDGET_TEMPLATE: &str = r#"<!DOCTYPE html>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.min.js" integrity="sha512-+bpyZqiNr/4QlUd6YnrAeLXzgooA1HKN5yUagHgPSMACPZgj8bkpCyZezPtDy5XbviRm4w8Z1RhfuWyoWaeCyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
-    {{wallet_script}}
     <iframe id="wrappedCheckout" style="border:none" width="100%" srcdoc="<html>
         <head>
             <script src='https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.9/iframeResizer.contentWindow.min.js' integrity='sha512-mdT/HQRzoRP4laVz49Mndx6rcCGA3IhuyhP3gaY0E9sZPkwbtDk9ttQIq9o8qGCf5VvJv1Xsy3k2yTjfUoczqw==' crossorigin='anonymous' referrerpolicy='no-referrer'></script>
@@ -42,11 +41,7 @@ const WRAPPED_CHECKOUT_WIDGET_TEMPLATE: &str = r#"<!DOCTYPE html>
     </script>
 </body>
 </html>"#;
-const WALLET_CHECKOUT_SCRIPT: &str = "<script src='https://checkout.bridgerpay.com/v2/launcher' data-cashier-key='{{cashier_key}}' data-cashier-token='{{cashier_token}}' data-button-mode='wallet'></script>";
-
-fn get_wallet_checkout_widget_template() -> String {
-    format!("<html><body>{}</body></html>", WALLET_CHECKOUT_SCRIPT)
-}
+const WALLET_CHECKOUT_WIDGET_TEMPLATE: &str = "<html><body><script src='https://checkout.bridgerpay.com/v2/launcher' data-cashier-key='{{cashier_key}}' data-cashier-token='{{cashier_token}}' data-button-mode='wallet'></script></body></html>";
 
 #[async_trait::async_trait]
 pub trait RestApiConfig {
@@ -127,7 +122,7 @@ impl<C: RestApiConfig> RestApiClient<C> {
         let template = match widget_type {
             CheckoutWidgetType::Regular => CHECKOUT_WIDGET_TEMPLATE,
             CheckoutWidgetType::Wrapped => WRAPPED_CHECKOUT_WIDGET_TEMPLATE,
-            CheckoutWidgetType::Wallet => &get_wallet_checkout_widget_template(),
+            CheckoutWidgetType::Wallet => WALLET_CHECKOUT_WIDGET_TEMPLATE,
         };
         let html = template
             .replace("{{cashier_key}}", &self.config.get_cashier_key().await)
