@@ -112,7 +112,7 @@ impl<C: RestApiConfig> RestApiClient<C> {
         &self,
         request: CreateCashierSessionRequest,
         widget_type: CheckoutWidgetType,
-    ) -> Result<String, String> {
+    ) -> Result<CheckoutWidgetModel, String> {
         let _ = self.login().await.map_err(|e| e.to_string())?;
         let session = self
             .create_cashier_session(request)
@@ -124,11 +124,17 @@ impl<C: RestApiConfig> RestApiClient<C> {
             CheckoutWidgetType::Wrapped => WRAPPED_CHECKOUT_WIDGET_TEMPLATE,
             CheckoutWidgetType::Wallet => WALLET_CHECKOUT_WIDGET_TEMPLATE,
         };
+        let cashier_key = self.config.get_cashier_key().await;
         let html = template
-            .replace("{{cashier_key}}", &self.config.get_cashier_key().await)
+            .replace("{{cashier_key}}", &cashier_key)
             .replace("{{cashier_token}}", &session.cashier_token);
+        let model = CheckoutWidgetModel {
+            html,
+            cashier_key,
+            cashier_token: session.cashier_token,
+        };
 
-        Ok(html)
+        Ok(model)
     }
 
     async fn _send<R: Serialize + Debug>(
@@ -392,4 +398,11 @@ pub enum CheckoutWidgetType {
     Regular,
     Wrapped,
     Wallet,
+}
+
+#[derive(Debug, Clone)]
+pub struct CheckoutWidgetModel {
+    pub html: String,
+    pub cashier_key: String,
+    pub cashier_token: String,
 }
