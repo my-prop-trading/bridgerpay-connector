@@ -74,6 +74,8 @@ pub struct Charge {
     pub mid_type: Option<String>,
     pub cft_id: Option<String>,
     pub order_id: Option<String>,
+    pub decline_reason: Option<String>,
+    pub decline_code: Option<String>,
 }
 
 #[derive(strum::Display, Debug, Clone, Serialize, Deserialize, PartialOrd, PartialEq)]
