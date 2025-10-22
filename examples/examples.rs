@@ -67,6 +67,8 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         apple_pay: Some(ApplePayModel {
             shipping_contact_required: Some(true),
         }),
+        button_text: None,
+        deposit_button_text: None,
     }
 }
 

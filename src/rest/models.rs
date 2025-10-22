@@ -88,6 +88,10 @@ pub struct CreateCashierSessionRequest {
     pub language: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub apple_pay: Option<ApplePayModel>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub button_text: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub deposit_button_text: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
