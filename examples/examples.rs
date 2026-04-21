@@ -69,6 +69,7 @@ pub fn create_cashier_session_req() -> CreateCashierSessionRequest {
         }),
         button_text: None,
         deposit_button_text: None,
+        pay_mode: None,
     }
 }
 
