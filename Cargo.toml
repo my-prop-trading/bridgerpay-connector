@@ -1,12 +1,12 @@
 [package]
 name = "bridgerpay-connector"
-version = "0.2.23"
+version = "0.2.24"
 edition = "2021"
 authors = ["gorin <mxmgorin@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-flurl = { git = "https://github.com/MyJetTools/fl-url.git", tag = "0.6.1" }
+flurl = { git = "https://github.com/MyJetTools/fl-url.git", tag = "0.7.0", features = ["with-ring-tls"] }
 
 http = "*"
 serde = { version = "*", features = ["derive"] }
@@ -26,3 +26,7 @@ ring = "0.17.9"
 
 [dev-dependencies]
 uuid = { version = "*", features = ["v4"] }
+
+[lints.rust]
+# Emitted by error_chain!.
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(has_error_description_deprecated)'] }

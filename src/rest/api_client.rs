@@ -4,7 +4,7 @@ use crate::rest::{
     CashierSessionModel, CreateCashierSessionRequest, LoginModel, LoginRequest, Response,
 };
 use error_chain::bail;
-use flurl::body::FlUrlBody;
+use flurl::body::HttpRequestBody;
 use flurl::{FlUrl, FlUrlResponse};
 use http::{Method, StatusCode};
 use serde::de::DeserializeOwned;
@@ -259,12 +259,10 @@ impl<C: RestApiConfig> RestApiClient<C> {
             request_json = Some(body.clone());
         }
 
-        // flurl 0.6.1 takes `impl Into<FlUrlBody>` instead of `Option<Vec<u8>>`.
-        // Content-Type is set explicitly in `add_headers`, so send the serialized JSON
-        // as raw bytes with no auto content-type to preserve the previous behaviour.
+        // Content-Type is set in `add_headers`, so the JSON goes as raw bytes without an auto one.
         let body = match &request_json {
-            Some(json) => FlUrlBody::from_raw_data(json.clone().into_bytes(), None),
-            None => FlUrlBody::empty(),
+            Some(json) => HttpRequestBody::from_raw_data(json.clone().into_bytes(), None),
+            None => HttpRequestBody::empty(),
         };
 
         let (flurl, url) = self.build_flurl(endpoint, request, path_params).await?;
